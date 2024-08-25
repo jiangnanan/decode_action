@@ -1,339 +1,305 @@
-//Sun Aug 25 2024 06:54:13 GMT+0000 (Coordinated Universal Time)
+//Sun Aug 25 2024 07:09:05 GMT+0000 (Coordinated Universal Time)
 //Base:https://github.com/echo094/decode-js
 //Modify:https://github.com/smallfawn/decode_action
 const {
   getToken,
-  sign,
-  tryCatchPromise,
-  validateCarmeWithType,
-  getCookies,
   checkCk,
-  getUserInfo,
+  validateCarmeWithType,
+  User_Agent,
   checkCarmeCount,
-  wait
-} = require("./common");
-const _0x38436e = 12;
-const _0x23dc98 = require("request");
-const _0x5c30ec = process.env.ELE_CARME;
-async function _0x58fe79(_0x1938bb) {
-  const _0x213706 = new Date().getTime();
-  const _0x1aea2b = {
-    instance: "INNER",
-    method: "GET",
-    options: "{\"env\":\"online\"}",
-    path: "/getCertificationInfo",
-    protocols: "{\"Content-Type\":\"application/json\",\"mc-timestamp\":\"" + _0x213706 + "\",\"mc-env\":\"online\"}",
-    queryString: "{}",
-    sdkVersion: "1.5.4"
-  };
-  let _0x485b28 = await _0x2928b2(_0x1938bb, _0x1aea2b);
-  return _0x485b28.authentication;
+  getUserInfo,
+  tryCatchPromise,
+  sign,
+  couponNotify
+} = require("./common.js");
+const request = require("request");
+const moment = require("moment");
+const md5 = require("md5");
+const GAME_TYEP = 11;
+const kami = process.env.ELE_CARME;
+const threadCount = process.env.threadCount || 1;
+function getCookies() {
+  let _0x5e80e6 = [];
+  if (process.env.elmqqck) {
+    if (process.env.elmqqck.indexOf("&") > -1) {
+      _0x5e80e6 = process.env.elmqqck.split("&");
+    } else {
+      if (process.env.elmqqck.indexOf("\n") > -1) {
+        _0x5e80e6 = process.env.elmqqck.split("\n");
+      } else {
+        _0x5e80e6 = [process.env.elmqqck];
+      }
+    }
+  }
+  return _0x5e80e6;
 }
-async function _0x2928b2(_0x383f4c, _0xcca1bd) {
-  const _0x48e431 = {
+function getNextDayZeroTimestamp(_0x5dc428) {
+  let _0xc4a369 = moment(_0x5dc428);
+  _0xc4a369 = _0xc4a369.add(1, "days").startOf("day");
+  return _0xc4a369.valueOf();
+}
+async function queryintegralproperty(_0x418aec) {
+  const _0x160718 = {
+    bizScene: "IDIOM",
+    bizParam: "{\"type\":\"ggetGold\"}",
+    bizMethod: "queryIndex"
+  };
+  const _0x49abc1 = await gameRequest(_0x418aec, _0x160718);
+  if (_0x49abc1) {
+    return _0x49abc1.num;
+  } else {
+    return -1;
+  }
+}
+async function gameRequest(_0xbbd89c, _0x5c552d) {
+  const _0x58e190 = {
     authority: "shopping.ele.me",
     accept: "application/json",
+    "accept-language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
     "cache-control": "no-cache",
     "content-type": "application/x-www-form-urlencoded",
-    cookie: _0x383f4c,
-    "x-miniapp-id-taobao": "3000000078920071",
-    "x-miniapp-version": "0.0.116",
-    "x-mini-appkey": "34190632",
-    "x-req-appkey": "34190632",
-    appid: "3000000078920071"
+    origin: "https://r.ele.me",
+    pragma: "no-cache",
+    referer: "https://r.ele.me/linkgame/index.html?navType=3&spm-pre=a2ogi.13162730.zebra-ele-login-module-9089118186&spm=a13.b_activity_kb_m71293.0.0",
+    cookie: _0xbbd89c,
+    "x-ele-ua": "RenderWay/H5 AppName/wap Mozilla/5.0 (Linux; Android 8.0.0; SM-G955U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
+    "user-agent": "Mozilla/5.0 (Linux; Android 8.0.0; SM-G955U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36"
   };
-  const _0x5b0fb1 = new Date().getTime();
-  const _0x41c3bc = 34190632;
-  var _0x4f1c6f = "data=" + encodeURIComponent(JSON.stringify(_0xcca1bd));
-  const _0x115515 = getToken(_0x383f4c),
-    _0x322f91 = _0x115515.split("_")[0];
-  const _0xe48caa = await sign(_0x322f91 + "&" + _0x5b0fb1 + "&" + _0x41c3bc + "&" + JSON.stringify(_0xcca1bd), _0x5c30ec);
-  const _0x109901 = {
-    url: "https://shopping.ele.me/h5/mtop.miniapp.cloud.application.request/1.0/?jsv=2.6.1&appKey=34190632&t=" + _0x5b0fb1 + "&sign=" + _0xe48caa + "&api=mtop.miniapp.cloud.application.request&v=1.0&type=originaljson&ttid=1608030065155%40eleme_android_11.0.38",
+  const _0x2cfa78 = new Date().getTime();
+  const _0x53d79a = 12574478;
+  var _0x1c1521 = "data=" + encodeURIComponent(JSON.stringify(_0x5c552d));
+  const _0x32d0ca = getToken(_0xbbd89c),
+    _0x113135 = _0x32d0ca.split("_")[0];
+  const _0x2dc4a9 = await sign(_0x113135 + "&" + _0x2cfa78 + "&" + _0x53d79a + "&" + JSON.stringify(_0x5c552d), kami);
+  const _0x2df1a4 = {
+    url: "https://shopping.ele.me/h5/mtop.alsc.playgame.mini.game.dispatch/1.0/?jsv=2.6.1&appKey=12574478&t=" + _0x2cfa78 + "&sign=" + _0x2dc4a9 + "&api=mtop.alsc.playgame.mini.game.dispatch&v=1.0&type=originaljson&dataType=json&timeout=5000&subDomain=shopping&mainDomain=ele.me&H5Request=true&pageDomain=ele.me&ttid=h5%40chrome_android_87.0.4280.141&SV=5.0",
     method: "POST",
-    headers: _0x48e431,
-    body: _0x4f1c6f
+    headers: _0x58e190,
+    body: _0x1c1521
   };
-  return tryCatchPromise(_0x1993b3 => {
-    _0x23dc98(_0x109901, async (_0x3c170f, _0x1a32da, _0x4ff6bf) => {
-      if (!_0x3c170f && _0x1a32da.statusCode === 200) {
+  return tryCatchPromise(_0x4f5f81 => {
+    request(_0x2df1a4, async (_0x12e64e, _0x5f0534, _0x4a60b6) => {
+      if (!_0x12e64e && _0x5f0534.statusCode == 200) {
         try {
-          const _0x2d4486 = JSON.parse(_0x4ff6bf);
-          _0x1993b3(_0x2d4486.data.data);
-        } catch (_0x5ad4f2) {
-          console.log(_0x4ff6bf);
-          _0x1993b3(null);
+          const _0x481f14 = JSON.parse(_0x4a60b6);
+          const _0x5418fb = JSON.parse(_0x481f14.data.data);
+          _0x4f5f81(_0x5418fb);
+        } catch (_0x5234b1) {
+          console.log(_0x4a60b6);
+          _0x4f5f81(null);
         }
       } else {
-        _0x1993b3(null);
+        _0x4f5f81(null);
       }
     });
   });
 }
-async function _0x337fd4(_0x6031a9) {
-  const _0x350363 = new Date().getTime();
-  const _0x27835c = {
-    instance: "INNER",
-    method: "GET",
-    options: "{\"env\":\"online\"}",
-    path: "/enterHome",
-    protocols: "{\"Content-Type\":\"application/json\",\"mc-timestamp\":\"" + _0x350363 + "\",\"mc-env\":\"online\"}",
-    queryString: "{}",
-    sdkVersion: "1.5.4"
+async function queryLotteryChance(_0x5ac705) {
+  const _0x4c0b37 = {
+    "content-type": "application/x-www-form-urlencoded;charset=UTF-8",
+    Cookie: _0x5ac705,
+    "User-Agent": User_Agent
   };
-  const _0x1c3f14 = await _0x2928b2(_0x6031a9, _0x27835c);
-  return _0x1c3f14.playerInfo;
-}
-async function _0x1c69aa(_0x574335) {
-  const _0x4eb470 = new Date().getTime();
-  const _0x308f36 = {
-    instance: "INNER",
-    method: "GET",
-    options: "{\"env\":\"online\"}",
-    path: "/getEventTasks",
-    protocols: "{\"Content-Type\":\"application/json\",\"mc-timestamp\":\"" + _0x4eb470 + "\",\"mc-env\":\"online\"}",
-    queryString: "{}",
-    sdkVersion: "1.5.4"
+  const _0x4e6c81 = new Date().getTime();
+  const _0x1c747d = 12574478;
+  const _0x232af1 = {
+    actId: "20221207144029906162546384",
+    collectionId: "20221216181231449964003945",
+    copyId: "20230621180222426368753918",
+    bizScene: "game_center",
+    channel: "abcd",
+    asac: "2A22C0239QW1FOL3UUQY7U"
   };
-  let _0x43d3bb = await _0x2928b2(_0x574335, _0x308f36);
-  return _0x43d3bb.taskList;
-}
-function _0x12353a(_0x32ea65, _0x284d9d = false) {
-  let _0x1ad749 = true;
-  for (let _0x279c39 = 0; _0x279c39 < _0x32ea65.length; _0x279c39++) {
-    let _0x2dd094 = _0x32ea65[_0x279c39];
-    let _0x46ce0e = _0x2dd094.finishStatus;
-    let _0x32fd13 = _0x2dd094.actionType;
-    if (_0x32fd13 === "score" && _0x284d9d) {
-      continue;
-    }
-    if (!_0x46ce0e) {
-      _0x1ad749 = _0x46ce0e;
-      return _0x1ad749;
-    }
-  }
-  return _0x1ad749;
-}
-function _0x1a7876(_0x44d189, _0x1c26ee) {
-  var _0x4117e0 = Math.floor(Math.random() * (_0x1c26ee - _0x44d189 + 1) + _0x44d189);
-  return _0x4117e0;
-}
-async function _0x1a5a37(_0x4953fd, _0x969ed3, _0x11435c, _0x5da44f) {
-  const _0x4e16d3 = {
-    body: "{\"level\":" + _0x11435c + ",\"itemBuy\":[],\"type\":\"" + _0x5da44f + "\"}",
-    headers: "{\"Content-Type\":\"application/json;charset=UTF-8\"}",
-    instance: "INNER",
+  const _0x23b95f = "data=" + encodeURIComponent(JSON.stringify(_0x232af1));
+  const _0x2fd785 = getToken(_0x5ac705),
+    _0x5b3d79 = _0x2fd785.split("_")[0];
+  const _0xeddc4e = md5(_0x5b3d79 + "&" + _0x4e6c81 + "&" + _0x1c747d + "&" + JSON.stringify(_0x232af1));
+  const _0x24fe68 = {
+    url: "https://guide-acs.m.taobao.com/h5/mtop.koubei.interactioncenter.platform.right.exchange.v2/1.0/5.0/?jsv=2.7.1&SV=5.0&appKey=12574478&ttid=1601274958480%40eleme_android_10.14.3&t=" + _0x4e6c81 + "&sign=" + _0xeddc4e + "&api=mtop.koubei.interactioncenter.platform.right.exchange.v2",
     method: "POST",
-    options: "{\"env\":\"online\"}",
-    path: "/enterLevelNew",
-    protocols: "{\"Content-Type\":\"application/json\",\"mc-timestamp\":\"" + new Date().getTime() + "\",\"mc-env\":\"online\"}",
-    queryString: "{\"playerToken\":\"" + _0x969ed3.playerId + new Date().getTime() + "\"}",
-    sdkVersion: "1.5.4"
+    headers: _0x4c0b37,
+    body: _0x23b95f
   };
-  return await _0x2928b2(_0x4953fd, _0x4e16d3);
-}
-async function _0x20303c(_0x467ceb, _0xf5b55d) {
-  const _0x523c44 = new Date().getTime();
-}
-async function _0x6aaa57(_0x3da9c0) {
-  try {
-    const _0x484e9e = new Date().getTime();
-    const _0x151ffd = {
-      instance: "INNER",
-      method: "GET",
-      options: "{\"env\":\"online\"}",
-      path: "/getNewChallengeInfo",
-      protocols: "{\"Content-Type\":\"application/json\",\"mc-timestamp\":\"" + _0x484e9e + "\",\"mc-env\":\"online\"}",
-      queryString: "{}",
-      sdkVersion: "1.5.4"
-    };
-    const _0x385406 = await _0x2928b2(_0x3da9c0, _0x151ffd);
-    return _0x385406.levelInfo.id;
-  } catch (_0x77854a) {
-    console.log("赛季挑战还未开始");
-    return null;
-  }
-}
-async function _0x547a04(_0x141422) {
-  let _0x24ee75 = 1;
-  let _0x22ee65 = await _0x337fd4(_0x141422);
-  await wait(1);
-  let _0x303b58 = await _0x1c69aa(_0x141422);
-  if (!_0x303b58) {
-    const _0x177d09 = _0x22ee65.level;
-    if (_0x177d09 === 0) {
-      console.log("该账号没有玩过美食摊，请玩过后在跑脚本");
-    } else {
-      console.log("获取任务列表失败，请稍后再试");
-    }
-    return;
-  }
-  let _0x7a0f55 = 1;
-  let _0x1a93fe = 100;
-  let _0x1dd6da = 100;
-  let _0x1d9a36 = _0x12353a(_0x303b58);
-  let _0x49ce2c = false;
-  for (let _0x181dc6 = 0; _0x181dc6 < _0x303b58.length; _0x181dc6++) {
-    let _0x3b7157 = _0x303b58[_0x181dc6];
-    let _0x192c5d = _0x3b7157.actionType;
-    let _0xb0f88c = _0x3b7157.finishStatus;
-    let _0x53c01c = _0x3b7157.targetAmount;
-    if (_0x192c5d === "hit" && _0xb0f88c === false) {
-      _0x7a0f55 = _0x53c01c;
-    } else {
-      if (_0x192c5d === "customer" && _0xb0f88c === false) {
-        _0x1a93fe = _0x53c01c;
-      } else {
-        if (_0x192c5d === "makeDishes" && _0xb0f88c === false) {
-          _0x1dd6da = _0x53c01c;
-        } else {
-          if (_0x192c5d === "score") {
-            _0x49ce2c = !_0xb0f88c;
-          }
-        }
-      }
-    }
-  }
-  let _0x115eea = false;
-  while (!_0x1d9a36 && _0x24ee75 < 10) {
-    _0x24ee75++;
-    try {
-      let _0x220eab = await _0x337fd4(_0x141422);
-      const _0x14c26e = _0x220eab.level;
-      let _0x28a68b = _0x14c26e + 1;
-      await _0x20303c(_0x141422, _0x28a68b);
-      let _0x2cb924 = _0x1a7876(10000, 30000);
-      let _0x32e42c = _0x1a7876(30, 50);
-      let _0x327bb8 = "GAME";
-      if (_0x49ce2c && !_0x115eea) {
-        _0x327bb8 = "DAILY_CHALLENGE";
-        let _0x259099 = await _0x6aaa57(_0x141422);
-        if (_0x259099 === null) {
-          _0x327bb8 = "GAME";
-          _0x115eea = true;
-        } else {
-          _0x28a68b = _0x259099;
-        }
-      }
-      const _0x21d6c7 = await _0x1a5a37(_0x141422, _0x220eab, _0x28a68b, _0x327bb8);
-      if (_0x21d6c7.errorMessage) {
-        console.log(_0x21d6c7.errorMessage);
-        break;
-      }
-      const _0xb189a8 = {
-        body: "{\"level\":\"" + _0x28a68b + "\",\"finishLevel\":true,\"maxHit\":" + _0x7a0f55 + ",\"angry\":false,\"like\":" + _0x32e42c + ",\"score\":" + _0x2cb924 + ",\"playerHead\":\"https://gw.alicdn.com/imgextra/i2/O1CN01dU4q4e1xzSlu9tqun_!!6000000006514-2-tps-512-512.png\",\"playerName\":\"tb**cd6\",\"r\":[400,6000,104,4200,220,2290,98,2000,6000,420,4000,420,173,4000,630,200,210,4400,168,6000,600,400],\"levelType\":\"" + _0x327bb8 + "\",\"customerAmount\":" + _0x1a93fe + ",\"scorchDishes\": 0,\"wasteBins\":0,\"golds\":189,\"gem\":1,\"itemUsed\":[],\"itemBuy\":[],\"foods\":[{\"food\":\"doujiang\",\"amount\":" + _0x1dd6da + "},{\"food\":\"mianbing\",\"amount\":10},{\"food\":\"mianbing_shengcai_kaochang_shalajiang\",\"amount\":1},{\"food\":\"mianbing_shengcai_kaochang\",\"amount\":7},{\"food\":\"mianbing_kaochang\",\"amount\":1}]}",
-        headers: "{\"Content-Type\":\"application/json;charset=UTF-8\"}",
-        instance: "INNER",
-        method: "POST",
-        options: "{\"env\":\"online\"}",
-        path: "/finishLevel",
-        protocols: "{\"Content-Type\":\"application/json\",\"mc-timestamp\":\"" + new Date().getTime() + "\",\"mc-env\":\"online\"}",
-        queryString: "{\"playerToken\":\"" + _0x220eab.playerId + new Date().getTime() + "\"}",
-        sdkVersion: "1.5.4"
-      };
-      let _0x43d129 = await _0x2928b2(_0x141422, _0xb189a8);
-      if (_0x43d129 && _0x43d129.errorMessage === "没有对应关卡") {
-        console.log("你已通关");
-        break;
-      } else {
-        if (_0x43d129.errorMessage) {
-          console.log(_0x43d129.errorMessage);
-          break;
-        }
-      }
-      _0x303b58 = await _0x1c69aa(_0x141422);
-      _0x1d9a36 = _0x12353a(_0x303b58, _0x115eea);
-      for (let _0xe39dc = 0; _0xe39dc < _0x303b58.length; _0xe39dc++) {
-        let _0x4bd0db = _0x303b58[_0xe39dc];
-        let _0x172057 = _0x4bd0db.actionType;
-        let _0x288835 = _0x4bd0db.finishStatus;
-        let _0x56528e = _0x4bd0db.targetAmount;
-        if (_0x172057 === "hit" && _0x288835 === false) {
-          _0x7a0f55 = _0x56528e;
-        } else {
-          if (_0x172057 === "customer" && _0x288835 === false) {
-            _0x1a93fe = _0x56528e;
-          } else {
-            if (_0x172057 === "makeDishes" && _0x288835 === false) {
-              _0x1dd6da = _0x56528e;
+  const _0x53aeb3 = {
+    length: threadCount
+  };
+  const _0xf2da58 = Array.from(_0x53aeb3, () => {
+    return tryCatchPromise(_0x2ea773 => {
+      request(_0x24fe68, async (_0x183b87, _0x1856a4, _0x342f00) => {
+        if (!_0x183b87 && _0x1856a4.statusCode === 200) {
+          try {
+            const _0x590e36 = JSON.parse(_0x342f00);
+            if (_0x590e36.data.data) {
+              console.log("抢券成功", _0x590e36.data.data[0].rightName);
+              await couponNotify(_0x5ac705, "###抢券成功推送\n抢券成功", _0x590e36.data.data[0].rightName);
+              process.exit(0);
             } else {
-              if (_0x172057 === "score" && !_0x115eea) {
-                _0x49ce2c = !_0x288835;
+              _0x2ea773();
+            }
+          } catch (_0x478de7) {
+            console.log(_0x478de7);
+            _0x2ea773(null);
+          }
+        } else {
+          _0x2ea773(null);
+        }
+      });
+    });
+  });
+  await Promise.all(_0xf2da58).then(_0x781cf8 => {}).catch(_0x420bc3 => {});
+}
+async function queryCoupon(_0x922284, _0x1cf317) {
+  const _0x2f633c = {
+    "content-type": "application/x-www-form-urlencoded;charset=UTF-8",
+    Cookie: _0x922284,
+    "x-tap": "wx",
+    referer: "https://servicewechat.com/wxece3a9a4c82f58c9/532/page-frame.html",
+    "mini-janus": "3%40s41AHfqDnza7twZ2HI4gXYAtN9eRII6d1C2B5eTDUozQHuWiR6VTpHEdvgDci1%3D%3D",
+    "User-Agent": "Mozilla/5.0 (Linux; Android 13; Pixel 4 XL Build/TP1A.220905.004; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5197 MMWEBSDK/20221012 MMWEBID/3313 MicroMessenger/8.0.30.2260(0x28001E55) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android"
+  };
+  const _0x2e4759 = {
+    condition: "",
+    latitude: 30.17853,
+    longitude: 120.221101,
+    tabCode: "HONG_BAO",
+    sourceFrom: "ELEME_WECHAT_MINIAPP",
+    extInfo: "{\"miniAppVersion\":\"10.19.31\"}"
+  };
+  const _0xb1b039 = new Date().getTime();
+  const _0x38e4cd = 12574478;
+  var _0x2c54ce = "data=" + encodeURIComponent(JSON.stringify(_0x2e4759));
+  const _0x6dbadb = _0x1cf317.split(";")[0],
+    _0x72bd9c = _0x6dbadb.split("_")[0];
+  const _0xa03178 = md5(_0x72bd9c + "&" + _0xb1b039 + "&" + _0x38e4cd + "&" + JSON.stringify(_0x2e4759), kami);
+  const _0x325cb1 = {
+    url: "https://waimai-guide.ele.me/h5/mtop.alsc.personal.querypasslist/1.0/2.0/?jsv=2.4.12&appKey=12574478&t=" + _0xb1b039 + "&sign=" + _0xa03178 + "&c=" + _0x1cf317 + "&api=mtop.alsc.personal.queryPassList&dataType=json&method=GET&timeout=10000&v=1.0&type=originaljson&ttid=wxece3a9a4c82f58c9%40wechat_android_11.1.5&accountSite=eleme&needLogin=true&ecole=1&_bx-m=1",
+    method: "GET",
+    headers: _0x2f633c,
+    body: _0x2c54ce
+  };
+  return tryCatchPromise(_0x32d96c => {
+    request(_0x325cb1, async (_0x5b4239, _0x42bd53, _0x1ab9b0) => {
+      if (!_0x5b4239 && _0x42bd53.statusCode === 200) {
+        try {
+          const _0x4e5be0 = JSON.parse(_0x1ab9b0);
+          if (_0x4e5be0.c) {
+            _0x32d96c(_0x4e5be0.c);
+          } else {
+            if (_0x4e5be0.data.result) {
+              let _0x4499d4 = _0x4e5be0.data.result.passInfoList[0];
+              if (_0x4499d4) {
+                let _0x1fa2fc = moment(new Date().getTime());
+                let _0x59fafd = _0x1fa2fc.startOf("day").valueOf();
+                let _0x5517ec = _0x4499d4.benefitList.filter(_0xaf2eac => _0xaf2eac.benefitType === "ELE_COMMODITY_HB");
+                let _0x4581ac = _0x5517ec.filter(_0x8d128d => {
+                  return _0x8d128d.gmtCreate === _0x59fafd / 1000 + "";
+                });
+                let _0x3d1a36 = _0x4581ac.filter(_0x6e0105 => _0x6e0105.amountText.amountText === "39");
+                if (_0x3d1a36.length > 0) {
+                  console.log("抢券成功", _0x3d1a36[0].title);
+                  await couponNotify(_0x922284, "###抢券成功推送\n抢券成功", _0x3d1a36[0].title);
+                  process.exit(0);
+                } else {
+                  console.log("抢券失败");
+                  process.exit(0);
+                }
+              } else {
+                console.log("抢券失败");
+                process.exit(0);
               }
+            } else {
+              console.log("抢券失败");
+              process.exit(0);
             }
           }
+        } catch (_0x55f2d6) {
+          console.log("查询抢券结果异常，请到 app 中查看");
+          process.exit(0);
         }
+      } else {
+        console.log("抢券失败");
+        process.exit(0);
       }
-      for (let _0x553676 = 0; _0x553676 < _0x303b58.length; _0x553676++) {
-        let _0x101cc6 = _0x303b58[_0x553676];
-        if (_0x101cc6.isAvailable) {
-          const _0x321ee8 = await _0x5d6ac3(_0x141422, _0x101cc6.id);
-          if (_0x321ee8) {
-            console.log(_0x101cc6.description + "已完成，当前乐园币：" + _0x321ee8);
-          }
-        }
-      }
-    } catch (_0x347024) {
-      console.log(_0x347024);
-    }
-  }
-  if (_0x12353a(_0x303b58, _0x115eea)) {
-    console.log("经营美食摊任务全部完成😄");
-  }
+    });
+  });
 }
-async function _0x5d6ac3(_0x5ca30d, _0x48b1de) {
-  const _0x21d91f = new Date().getTime();
-  const _0x1b56f7 = {
-    body: "{\"taskId\":" + _0x48b1de + "}",
-    headers: "{\"Content-Type\":\"application/json;charset=UTF-8\"}",
-    instance: "INNER",
-    method: "POST",
-    options: "{\"env\":\"online\"}",
-    path: "/sendDish",
-    protocols: "{\"Content-Type\":\"application/json\",\"mc-timestamp\":\"" + _0x21d91f + "\",\"mc-env\":\"online\"}",
-    sdkVersion: "1.5.4"
+function syncTime() {
+  const _0x157a9f = {
+    "User-Agent": User_Agent
   };
-  return await _0x2928b2(_0x5ca30d, _0x1b56f7);
-}
-async function _0x51929f() {
-  await validateCarmeWithType(_0x5c30ec, 1);
-  const _0x457dfa = getCookies();
-  for (let _0x3054fb = 0; _0x3054fb < _0x457dfa.length; _0x3054fb++) {
-    const _0x4f239e = _0x457dfa[_0x3054fb];
-    if (!_0x4f239e) {
-      console.log(" ❌无效用户信息, 请重新获取ck");
-    } else {
-      try {
-        let _0xfe58ae = await checkCk(_0x4f239e, _0x3054fb);
-        if (!_0xfe58ae) {
-          continue;
+  const _0x4fa19f = {
+    url: "http://api.k780.com:88/?app=life.time&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json",
+    method: "GET",
+    headers: _0x157a9f
+  };
+  return tryCatchPromise(_0x803984 => {
+    request(_0x4fa19f, async (_0x2bfe77, _0x1be3bb, _0x5e9548) => {
+      if (!_0x2bfe77 && _0x1be3bb.statusCode === 200) {
+        try {
+          const _0x369e9a = JSON.parse(_0x5e9548);
+          if (_0x369e9a.result) {
+            _0x803984(_0x369e9a.result.timestamp);
+          } else {
+            _0x803984(null);
+          }
+        } catch (_0x157613) {
+          _0x803984(null);
         }
-        let _0x13aa44 = await getUserInfo(_0xfe58ae);
-        if (!_0x13aa44.username) {
-          console.log("第", _0x3054fb + 1, "账号失效！请重新登录！！！😭");
-          continue;
-        }
-        const _0x2ed612 = _0x13aa44.user_id;
-        await checkCarmeCount(_0x5c30ec, _0x2ed612, _0x38436e);
-        console.log("******开始【饿了么账号", _0x3054fb + 1, "】", _0x13aa44.username, "*********");
-        let _0x4c6f12 = await _0x58fe79(_0xfe58ae);
-        if (!_0x4c6f12) {
-          console.log("请完成实名认证后再来玩游戏");
-          continue;
-        }
-        await _0x547a04(_0xfe58ae);
-        if (_0x3054fb !== _0x457dfa.length - 1) {
-          console.log("延时 5 秒");
-          await wait(5);
-        }
-      } catch (_0x2cf95c) {
-        console.log(_0x2cf95c);
+      } else {
+        _0x803984(null);
       }
-    }
-  }
-  process.exit(0);
+    });
+  });
 }
-_0x51929f();
+async function start() {
+  await validateCarmeWithType(kami, 1);
+  const _0x4d25a7 = getCookies();
+  for (let _0x173183 = 0; _0x173183 < _0x4d25a7.length; _0x173183++) {
+    let _0x4d7c8d = _0x4d25a7[_0x173183];
+    _0x4d7c8d = await checkCk(_0x4d7c8d, _0x173183);
+    if (!_0x4d7c8d) {
+      process.exit(0);
+    }
+    let _0x55c808 = await getUserInfo(_0x4d7c8d);
+    if (!_0x55c808.username) {
+      console.log("第", _0x173183 + 1, "账号失效！请重新登录！！！😭");
+      process.exit(0);
+    }
+    const _0x1d4cae = _0x55c808.user_id;
+    console.log("****** #" + (_0x173183 + 1), _0x55c808.mobile, "*********");
+    console.log("账号的 id 为", _0x1d4cae);
+    console.log("当前抢券线程数为", threadCount);
+    let _0x4f740b = await queryintegralproperty(_0x4d7c8d);
+    if (_0x4f740b !== -1 && _0x4f740b < 9999) {
+      console.log("金币不够兑换 39 元券，程序结束");
+      process.exit(0);
+    }
+    await checkCarmeCount(kami, _0x1d4cae, GAME_TYEP);
+    let _0x43f6ba = await syncTime();
+    if (!_0x43f6ba) {
+      _0x43f6ba = new Date().getTime() / 1000;
+    }
+    let _0x4d48a3 = getNextDayZeroTimestamp(_0x43f6ba * 1000);
+    let _0x36659d = _0x4d48a3 - _0x43f6ba * 1000 - 2000;
+    console.log("程序将在", _0x36659d / 1000, "秒后开始抢券");
+    setTimeout(async () => {
+      runAfterTenSeconds(_0x4d7c8d);
+      while (true) {
+        await queryLotteryChance(_0x4d7c8d);
+      }
+    }, _0x36659d);
+  }
+}
+function runAfterTenSeconds(_0x5b9c3b) {
+  setTimeout(async () => {
+    let _0xac647b = await queryCoupon(_0x5b9c3b, "64c767d7e6851eebe3c8cd476b0bc622_1692237574823;6f86648948993abca30366d96015297a");
+    if (_0xac647b) {
+      await queryCoupon(_0x5b9c3b, _0xac647b);
+    }
+    process.exit(0);
+  }, 10000);
+}
+start();
 function Env(t, e) {
   "undefined" != typeof process && JSON.stringify(process.env).indexOf("GITHUB") > -1 && process.exit(0);
   class s {
