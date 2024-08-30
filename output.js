@@ -1,303 +1,226 @@
-//Fri Aug 30 2024 01:24:07 GMT+0000 (Coordinated Universal Time)
+//Fri Aug 30 2024 01:26:30 GMT+0000 (Coordinated Universal Time)
 //Base:https://github.com/echo094/decode-js
 //Modify:https://github.com/smallfawn/decode_action
 const {
   getToken,
   checkCk,
-  validateCarmeWithType,
-  User_Agent,
-  checkCarmeCount,
+  getCookies,
   getUserInfo,
+  validateCarmeWithType,
+  wait,
+  checkCarmeCount,
   tryCatchPromise
 } = require("./common.js");
 const request = require("request");
-const moment = require("moment");
-const md5 = require("md5");
 const {
   sign
 } = require("./common");
-const GAME_TYEP = 11;
+const GAME_TYEP = 7;
+const wait_time = process.env.sq_wait_time || 30;
 const kami = process.env.ELE_CARME;
-const threadCount = process.env.threadCount || 1;
-function getCookies() {
-  let _0x5de95d = [];
-  if (process.env.elmqqck) {
-    if (process.env.elmqqck.indexOf("&") > -1) {
-      _0x5de95d = process.env.elmqqck.split("&");
-    } else {
-      if (process.env.elmqqck.indexOf("\n") > -1) {
-        _0x5de95d = process.env.elmqqck.split("\n");
-      } else {
-        _0x5de95d = [process.env.elmqqck];
-      }
-    }
-  }
-  return _0x5de95d;
+function isEmpty(_0x28640c) {
+  return Object.values(_0x28640c).length === 0;
 }
-function getNextDayZeroTimestamp(_0x52441f) {
-  let _0xfc42a7 = moment(_0x52441f);
-  _0xfc42a7 = _0xfc42a7.add(1, "days").startOf("day");
-  return _0xfc42a7.valueOf();
-}
-async function queryintegralproperty(_0x3fd0e7) {
-  const _0x488e82 = {
-    bizScene: "IDIOM",
-    bizParam: "{\"type\":\"ggetGold\"}",
-    bizMethod: "queryIndex"
-  };
-  const _0x32cc3f = await gameRequest(_0x3fd0e7, _0x488e82);
-  if (_0x32cc3f) {
-    return _0x32cc3f.num;
-  } else {
-    return -1;
-  }
-}
-async function gameRequest(_0x511add, _0x97a7dd) {
-  const _0x21eeb0 = {
-    authority: "shopping.ele.me",
-    accept: "application/json",
-    "accept-language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
-    "cache-control": "no-cache",
-    "content-type": "application/x-www-form-urlencoded",
-    origin: "https://r.ele.me",
-    pragma: "no-cache",
-    referer: "https://r.ele.me/linkgame/index.html?navType=3&spm-pre=a2ogi.13162730.zebra-ele-login-module-9089118186&spm=a13.b_activity_kb_m71293.0.0",
-    cookie: _0x511add,
-    "x-ele-ua": "RenderWay/H5 AppName/wap Mozilla/5.0 (Linux; Android 8.0.0; SM-G955U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36",
-    "user-agent": "Mozilla/5.0 (Linux; Android 8.0.0; SM-G955U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36"
-  };
-  const _0x17e889 = new Date().getTime();
-  const _0x5f42ed = 12574478;
-  var _0x757479 = "data=" + encodeURIComponent(JSON.stringify(_0x97a7dd));
-  const _0xb13085 = getToken(_0x511add),
-    _0x12067b = _0xb13085.split("_")[0];
-  const _0x1dd080 = await sign(_0x12067b + "&" + _0x17e889 + "&" + _0x5f42ed + "&" + JSON.stringify(_0x97a7dd), kami);
-  const _0x23fc80 = {
-    url: "https://shopping.ele.me/h5/mtop.alsc.playgame.mini.game.dispatch/1.0/?jsv=2.6.1&appKey=12574478&t=" + _0x17e889 + "&sign=" + _0x1dd080 + "&api=mtop.alsc.playgame.mini.game.dispatch&v=1.0&type=originaljson&dataType=json&timeout=5000&subDomain=shopping&mainDomain=ele.me&H5Request=true&pageDomain=ele.me&ttid=h5%40chrome_android_87.0.4280.141&SV=5.0",
-    method: "POST",
-    headers: _0x21eeb0,
-    body: _0x757479
-  };
-  return tryCatchPromise(_0x550ec2 => {
-    request(_0x23fc80, async (_0x319ff7, _0x3cf8c8, _0x3fdcc8) => {
-      if (!_0x319ff7 && _0x3cf8c8.statusCode === 200) {
-        try {
-          const _0x46ade6 = JSON.parse(_0x3fdcc8);
-          const _0x83b197 = JSON.parse(_0x46ade6.data.data);
-          _0x550ec2(_0x83b197);
-        } catch (_0x22346b) {
-          console.log(_0x3fdcc8);
-          _0x550ec2(null);
-        }
-      } else {
-        _0x550ec2(null);
-      }
-    });
-  });
-}
-async function queryCoupon(_0x102e85, _0x17f82b) {
-  const _0x132845 = {
+async function getInfo(_0x441e9f, _0x374515) {
+  const _0x1229b1 = {
     "content-type": "application/x-www-form-urlencoded;charset=UTF-8",
-    Cookie: _0x102e85,
+    Cookie: _0x441e9f,
     "x-tap": "wx",
     referer: "https://servicewechat.com/wxece3a9a4c82f58c9/532/page-frame.html",
     "mini-janus": "3%40s41AHfqDnza7twZ2HI4gXYAtN9eRII6d1C2B5eTDUozQHuWiR6VTpHEdvgDci1%3D%3D",
     "User-Agent": "Mozilla/5.0 (Linux; Android 13; Pixel 4 XL Build/TP1A.220905.004; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/5197 MMWEBSDK/20221012 MMWEBID/3313 MicroMessenger/8.0.30.2260(0x28001E55) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android"
   };
-  const _0x32a4d7 = {
-    condition: "",
-    latitude: 30.17853,
-    longitude: 120.221101,
-    tabCode: "HONG_BAO",
-    sourceFrom: "ELEME_WECHAT_MINIAPP",
-    extInfo: "{\"miniAppVersion\":\"10.19.31\"}"
+  const _0x4bee72 = {
+    sceneCode: "",
+    inviter: 1182216970,
+    unionId: "o_PVDuKoERVt6K5nIVbca1zgT950",
+    communityType: 0,
+    groupEnvironment: false,
+    encryptedData: "",
+    iv: "",
+    code: ""
   };
-  const _0x29cb79 = new Date().getTime();
-  const _0x1b557c = 12574478;
-  var _0x1b4049 = "data=" + encodeURIComponent(JSON.stringify(_0x32a4d7));
-  const _0x58861e = _0x17f82b.split(";")[0],
-    _0x5253ee = _0x58861e.split("_")[0];
-  const _0x49e18a = await sign(_0x5253ee + "&" + _0x29cb79 + "&" + _0x1b557c + "&" + JSON.stringify(_0x32a4d7), kami);
-  const _0x3e87d3 = {
-    url: "https://waimai-guide.ele.me/h5/mtop.alsc.personal.querypasslist/1.0/2.0/?jsv=2.4.12&appKey=12574478&t=" + _0x29cb79 + "&sign=" + _0x49e18a + "&c=" + _0x17f82b + "&api=mtop.alsc.personal.queryPassList&dataType=json&method=GET&timeout=10000&v=1.0&type=originaljson&ttid=wxece3a9a4c82f58c9%40wechat_android_11.1.5&accountSite=eleme&needLogin=true&ecole=1&_bx-m=1",
+  const _0x238859 = new Date().getTime();
+  const _0x4095d3 = 32529321;
+  var _0x599959 = "data=" + encodeURIComponent(JSON.stringify(_0x4bee72));
+  const _0x1a8d35 = _0x374515.split(";")[0],
+    _0x17e98a = _0x1a8d35.split("_")[0];
+  const _0x598603 = await sign(_0x17e98a + "&" + _0x238859 + "&" + _0x4095d3 + "&" + JSON.stringify(_0x4bee72), kami);
+  const _0x259842 = {
+    url: "https://waimai-guide.ele.me/h5/mtop.alsc.wechat.biz.api.community.homepage/1.0/4.0/?jsv=2.4.12&appKey=" + _0x4095d3 + "&t=" + _0x238859 + "&sign=" + _0x598603 + "&c=" + _0x374515 + "&api=mtop.alsc.wechat.biz.api.community.homepage&dataType=json&method=GET&timeout=10000&v=1.0&type=originaljson&ttid=wxece3a9a4c82f58c9%40wechat_android_11.1.5&accountSite=eleme&needLogin=true&ecole=1&_bx-m=1",
     method: "GET",
-    headers: _0x132845,
-    body: _0x1b4049
+    headers: _0x1229b1,
+    body: _0x599959
   };
-  return tryCatchPromise(_0x46a861 => {
-    request(_0x3e87d3, async (_0x2203f9, _0x5587b2, _0x3a6879) => {
-      if (!_0x2203f9 && _0x5587b2.statusCode === 200) {
+  return new Promise(_0x45c49b => {
+    request(_0x259842, async (_0xf92679, _0x567ed2, _0x31e0c6) => {
+      if (!_0xf92679 && _0x567ed2.statusCode === 200) {
         try {
-          const _0x43fc4a = JSON.parse(_0x3a6879);
-          if (_0x43fc4a.c) {
-            _0x46a861(_0x43fc4a.c);
+          const _0xae59a7 = JSON.parse(_0x31e0c6);
+          if (!isEmpty(_0xae59a7.data)) {
+            _0x45c49b(_0xae59a7.data);
           } else {
-            if (_0x43fc4a.data.result) {
-              let _0x3894eb = _0x43fc4a.data.result.passInfoList[0];
-              if (_0x3894eb) {
-                let _0x2c57b2 = moment(new Date().getTime());
-                let _0x5c3e21 = _0x2c57b2.startOf("day").valueOf();
-                let _0x5eec17 = _0x3894eb.benefitList.filter(_0x5adb70 => _0x5adb70.benefitType === "ELE_COMMODITY_HB");
-                let _0xc43ced = _0x5eec17.filter(_0x9910cf => {
-                  return _0x9910cf.gmtCreate === _0x5c3e21 / 1000 + "";
-                });
-                let _0x3a3102 = _0xc43ced.filter(_0x3210fa => _0x3210fa.amountText.amountText === "20");
-                if (_0x3a3102.length > 0) {
-                  console.log("抢券成功", _0x3a3102[0].title);
-                  process.exit(0);
-                } else {
-                  console.log("抢券失败");
-                  process.exit(0);
-                }
-              } else {
-                console.log("抢券失败");
-                process.exit(0);
-              }
-            } else {
-              console.log("抢券失败");
-              process.exit(0);
-            }
+            console.log(_0xae59a7.ret[0]);
+            _0x45c49b(null);
           }
-        } catch (_0x10482e) {
-          console.log("抢券失败");
-          process.exit(0);
+        } catch (_0x51b068) {
+          console.log(_0x31e0c6);
+          _0x45c49b(null);
         }
       } else {
-        console.log("抢券失败");
-        process.exit(0);
+        _0x45c49b(null);
       }
     });
   });
 }
-async function queryLotteryChance(_0x2b4516) {
-  const _0x23cc32 = {
-    "content-type": "application/x-www-form-urlencoded;charset=UTF-8",
-    Cookie: _0x2b4516,
-    "User-Agent": User_Agent
+async function signin(_0x3b5c57, _0x2709c0) {
+  const _0x5143af = {
+    Connection: "keep-alive",
+    Accept: "application/json",
+    "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36 MicroMessenger/7.0.9.501 NetType/WIFI MiniProgramEnv/Windows WindowsWechat",
+    "X-UA": "RenderWay/miniProgram MiniAppId/wxece3a9a4c82f58c9 MiniAppVersion/10.20.1 DeviceId/o_PVDuFVUiMuXa6jZ4cdWpremOXc AppName/Wechat",
+    "bx-ua": "303$bqxE95b898QfMaIsexRSS/Ez1qtZFtT1I1zFzFMzYs7DGC/4WG8S/lmy7xVK7xEvatk2itmmLFo0t3usT+xYvKNXtfyVb4eaiLMeTMgSIAR7TYqV3dD2lrmYvU8sgmCq+6PoF9YXQd7JbKFPs1+TAXWbI2cg+2h5/YqJFcX7ZQXxueBXnTXNhWqo30Vr2imcaQIYkL+SwcbP3X2CJyVeO/2N0FmVxaGj4Y5uk3uXScNvzhL7SdpRoqM5ccnIF23W8hD2ZdG5IOkulEPYMIO9i/mttQPfUNyWM7H1kk0NJqTaVsACWDj4z2Xhr4TOTbr8UJiZczA8ap593XmFlbN3HEeqsKs5k3ZDrn1E63lEGNJWZsZDc8mkYWdYKkEQK+JuhVamCCSDPByRqJHfzlrwMLq6doyuCLqamJUcpxogZ06uAX6/d8VLOHnC2Ybv+2wPiTtXiqGL886tv2LmL+9JibEhBeEu2hSodppC8VJ/CYVshwFWxj2TNi16iKW7MFyi7x+GmZZ03KgpqZ0aL14xeMq/DxykbTghL5dVPBFZcfL=",
+    "bx-umidtoken": "S2gAWFvrznqymrKnNNrp-ilU26sxMCmsn-uDNWWg_gvVk08ZG5CG2lyLJzk22ooWb0nofjr-6WkDRnOoHnS54MihKN7ZY2pAaXtHOOQ9nibfgw==",
+    "mini-janus": "3%40sBaI71cZCCLEtQgQ3%2FRSsC3tchizJmMPsmFJKAK6hSKuRu8d6oaXhxM4YfG%3D",
+    "x-decode-ua": "false",
+    "x-ele-check": "RuTUhNLhmjbNmMWBEhgWpHFZfeTYjcv+VspUSIWqdxn+jezT/w/o/iDSVD5ED4WiAR9ZDDd5TjumYKBoKSSHkCLi+Khc91YO3Nbp43H7ws/FAlPTBOHz1ONmRjrmHFSljsFQz7eKw3XmO4CC8YTqAoSsPxllV7v224aDliyze80AfTGbnlNk3NH6yjvWyVw2EzW8DjTJut2YzFXhYDAzXmw0Eot+7ww0oXIJMm2S10XuALrBmsqWTs2m6Rw2RxB2mcSd3qxPbOn8fBKxooPRbHxHRNhxRpK0zu2XPLp7dcGuhkbIx5WFKM8KwiueMmed5iaHJcqnmTlGCrRG7EwaMI4noZYoXfUNlQeJslWKOXfqJ6VpXPN7ORJsXmSu/sn/QKxDZgMd2i0V73A0+LkL+UOipaCvJorGo14+bfOyYSCqAGPiSb83tmLxax4eVXc8NDNWLqfeE9mT8zdOfjqjBRf52vLwX7HIjAp3SM6GdV++sUPJRVaU1OGZOaQHtrmQ",
+    "x-ele-ua": "RenderWay/miniProgram MiniAppId/wxece3a9a4c82f58c9 MiniAppVersion/10.20.1 DeviceId/o_PVDuFVUiMuXa6jZ4cdWpremOXc AppName/Wechat microsoft/microsoft windows/10 Wechat/3.4.0 channel/wechat_app subChannel/wechat_app.default MicroMessenger/8.0.6",
+    "x-secext-city": "21",
+    "x-tap": "wx",
+    "x-ticid": "ARF-8TDuE8Hp-BvQA-2Kt6CXRWVIVYXQP17Rkkd3yLqT43On0ljjKb9CYZSD9R0o39xFvMytwZBFkkuljESZ-Bc6X4xb",
+    Referer: "https://servicewechat.com/wxece3a9a4c82f58c9/496/page-frame.html",
+    Cookie: _0x3b5c57,
+    "content-type": "application/x-www-form-urlencoded"
   };
-  const _0x5ef499 = new Date().getTime();
-  const _0x994c65 = 12574478;
-  const _0x5f2996 = {
-    actId: "20221207144029906162546384",
-    collectionId: "20221216181231449964003945",
-    copyId: "20230627110035952340005303",
-    bizScene: "game_center",
-    channel: "abcd",
-    asac: "2A22C0239QW1FOL3UUQY7U"
-  };
-  const _0x341a96 = "data=" + encodeURIComponent(JSON.stringify(_0x5f2996));
-  const _0x2bd746 = getToken(_0x2b4516),
-    _0x44dd09 = _0x2bd746.split("_")[0];
-  const _0x805906 = md5(_0x44dd09 + "&" + _0x5ef499 + "&" + _0x994c65 + "&" + JSON.stringify(_0x5f2996));
-  const _0x2ecad8 = {
-    url: "https://guide-acs.m.taobao.com/h5/mtop.koubei.interactioncenter.platform.right.exchange.v2/1.0/5.0/?jsv=2.7.1&SV=5.0&appKey=12574478&ttid=1601274958480%40eleme_android_10.14.3&t=" + _0x5ef499 + "&sign=" + _0x805906 + "&api=mtop.koubei.interactioncenter.platform.right.exchange.v2",
-    method: "POST",
-    headers: _0x23cc32,
-    body: _0x341a96
-  };
-  const _0xdf289a = {
-    length: threadCount
-  };
-  const _0x1685e3 = Array.from(_0xdf289a, () => {
-    return tryCatchPromise(_0xe75412 => {
-      request(_0x2ecad8, async (_0x2e094e, _0x5372fb, _0x1086ac) => {
-        if (!_0x2e094e && _0x5372fb.statusCode === 200) {
-          try {
-            const _0x316e59 = JSON.parse(_0x1086ac);
-            if (_0x316e59.data.data) {
-              console.log("抢券成功", _0x316e59.data.data[0].rightName);
-              process.exit(0);
-            } else {
-              _0xe75412();
-            }
-          } catch (_0x52ecdc) {
-            console.log(_0x52ecdc);
-            _0xe75412(null);
-          }
-        } else {
-          _0xe75412(null);
-        }
-      });
-    });
-  });
-  await Promise.all(_0x1685e3).then(_0xc37a18 => {}).catch(_0x22fc61 => {});
-}
-function syncTime() {
-  const _0x4358c6 = {
-    "User-Agent": User_Agent
-  };
-  const _0x372ad1 = {
-    url: "http://api.k780.com:88/?app=life.time&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json",
+  const _0x5cb25f = new Date().getTime();
+  const _0x1aeaa2 = {
+    url: "https://guide-acs.m.taobao.com/h5/mtop.alsc.wechat.biz.api.checkin/1.0/4.0/?jsv=2.4.12&appKey=32529321&t=\"" + _0x5cb25f + "\"&sign=19bcc772739e471dd8bae51cf7abb34c&c=65132fab890611a36ea4c56426be6bc5_1685709597766%3Bde94d00b67ff8d2082f9efeeaf38cfd4&api=mtop.alsc.wechat.biz.api.checkin&dataType=json&method=GET&timeout=10000&v=1.0&type=originaljson&ttid=wxece3a9a4c82f58c9%40wechat_ios_10.20.1&accountSite=eleme&data={\"sceneCode\":\"" + _0x2709c0 + "\",\"firstCheckIn\":false}&_bx-m=1",
     method: "GET",
-    headers: _0x4358c6
+    headers: _0x5143af
   };
-  return tryCatchPromise(_0x1fb9d3 => {
-    request(_0x372ad1, async (_0x1692c9, _0x2881c2, _0xfef58) => {
-      if (!_0x1692c9 && _0x2881c2.statusCode === 200) {
+  return tryCatchPromise(_0x44265b => {
+    request(_0x1aeaa2, async (_0x50eb4a, _0x484cb9, _0x12faa2) => {
+      if (!_0x50eb4a && _0x484cb9.statusCode === 200) {
         try {
-          const _0x25228e = JSON.parse(_0xfef58);
-          if (_0x25228e.result) {
-            _0x1fb9d3(_0x25228e.result.timestamp);
+          const _0x110efe = JSON.parse(_0x12faa2);
+          if (!isEmpty(_0x110efe.data)) {
+            _0x44265b(_0x110efe.data);
           } else {
-            _0x1fb9d3(null);
+            console.log(_0x110efe.ret[0]);
+            _0x44265b(null);
           }
-        } catch (_0x3075de) {
-          _0x1fb9d3(null);
+        } catch (_0x5a4a6d) {
+          console.log(_0x12faa2 || _0x5a4a6d);
+          _0x44265b(null);
         }
       } else {
-        _0x1fb9d3(null);
+        _0x44265b(null);
       }
     });
   });
+}
+async function bindInvited(_0x2aab6b, _0x213e4b) {
+  const _0x33ea3a = {
+    Connection: "keep-alive",
+    Accept: "application/json",
+    "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36 MicroMessenger/7.0.9.501 NetType/WIFI MiniProgramEnv/Windows WindowsWechat",
+    "X-UA": "RenderWay/miniProgram MiniAppId/wxece3a9a4c82f58c9 MiniAppVersion/10.20.1 DeviceId/o_PVDuFVUiMuXa6jZ4cdWpremOXc AppName/Wechat",
+    "bx-ua": "303$bqxE95b898QfMaIsexRSS/Ez1qtZFtT1I1zFzFMzYs7DGC/4WG8S/lmy7xVK7xEvatk2itmmLFo0t3usT+xYvKNXtfyVb4eaiLMeTMgSIAR7TYqV3dD2lrmYvU8sgmCq+6PoF9YXQd7JbKFPs1+TAXWbI2cg+2h5/YqJFcX7ZQXxueBXnTXNhWqo30Vr2imcaQIYkL+SwcbP3X2CJyVeO/2N0FmVxaGj4Y5uk3uXScNvzhL7SdpRoqM5ccnIF23W8hD2ZdG5IOkulEPYMIO9i/mttQPfUNyWM7H1kk0NJqTaVsACWDj4z2Xhr4TOTbr8UJiZczA8ap593XmFlbN3HEeqsKs5k3ZDrn1E63lEGNJWZsZDc8mkYWdYKkEQK+JuhVamCCSDPByRqJHfzlrwMLq6doyuCLqamJUcpxogZ06uAX6/d8VLOHnC2Ybv+2wPiTtXiqGL886tv2LmL+9JibEhBeEu2hSodppC8VJ/CYVshwFWxj2TNi16iKW7MFyi7x+GmZZ03KgpqZ0aL14xeMq/DxykbTghL5dVPBFZcfL=",
+    "bx-umidtoken": "S2gAWFvrznqymrKnNNrp-ilU26sxMCmsn-uDNWWg_gvVk08ZG5CG2lyLJzk22ooWb0nofjr-6WkDRnOoHnS54MihKN7ZY2pAaXtHOOQ9nibfgw==",
+    "mini-janus": "3%40sBaI71cZCCLEtQgQ3%2FRSsC3tchizJmMPsmFJKAK6hSKuRu8d6oaXhxM4YfG%3D",
+    "x-decode-ua": "false",
+    "x-ele-check": "RuTUhNLhmjbNmMWBEhgWpHFZfeTYjcv+VspUSIWqdxn+jezT/w/o/iDSVD5ED4WiAR9ZDDd5TjumYKBoKSSHkCLi+Khc91YO3Nbp43H7ws/FAlPTBOHz1ONmRjrmHFSljsFQz7eKw3XmO4CC8YTqAoSsPxllV7v224aDliyze80AfTGbnlNk3NH6yjvWyVw2EzW8DjTJut2YzFXhYDAzXmw0Eot+7ww0oXIJMm2S10XuALrBmsqWTs2m6Rw2RxB2mcSd3qxPbOn8fBKxooPRbHxHRNhxRpK0zu2XPLp7dcGuhkbIx5WFKM8KwiueMmed5iaHJcqnmTlGCrRG7EwaMI4noZYoXfUNlQeJslWKOXfqJ6VpXPN7ORJsXmSu/sn/QKxDZgMd2i0V73A0+LkL+UOipaCvJorGo14+bfOyYSCqAGPiSb83tmLxax4eVXc8NDNWLqfeE9mT8zdOfjqjBRf52vLwX7HIjAp3SM6GdV++sUPJRVaU1OGZOaQHtrmQ",
+    "x-ele-ua": "RenderWay/miniProgram MiniAppId/wxece3a9a4c82f58c9 MiniAppVersion/10.20.1 DeviceId/o_PVDuFVUiMuXa6jZ4cdWpremOXc AppName/Wechat microsoft/microsoft windows/10 Wechat/3.4.0 channel/wechat_app subChannel/wechat_app.default MicroMessenger/8.0.6",
+    "x-secext-city": "21",
+    "x-smallstc": "{\"loginSucResultAction\":\"loginResult\",\"st\":\"tb_s_ele_1ADg6Le-9nIGfIQpspL2mGA\",\"loginType\":\"snsLogin\",\"open_id\":\"oQZUI0dAar6UJEJjyqlF_EpvOxao\",\"loginScene\":\"miniProgramLogin\",\"unb\":2209633667417,\"resultCode\":100,\"appEntrance\":\"weixin\",\"elemeExt\":\"{}\",\"smartlock\":false,\"snsType\":\"weixin_mini_program\",\"sid\":\"12be3156d10c030cec5acf731cc19408\",\"cookie2\":\"12be3156d10c030cec5acf731cc19408\",\"munb\":2209633667417,\"SID\":\"MTJiZTMxNTZkMTBjMDMwY2VjNWFjZjczMWNjMTk0MDjMFG-U2x_nu2TxBkH-SqbB\",\"bindTag\":\"existed\",\"loginResult\":\"success\",\"sgcookie\":\"M100gXLFvYP5Fr2PcLvry0ZbmxyWQoKIKBAyF7mJsrmbyn8NDS84jY/MTCUTf+a5Iz6vMBvY7EovOaKViS1KUxTf9/CB2ktVude/f4YNmQvy01o=\",\"user_id\":\"1000127450482\",\"csg\":\"1564a413\",\"union_id\":\"o_PVDuFVUiMuXa6jZ4cdWpremOXc\",\"USERID\":\"1000127450482\",\"UTUSER\":\"1000127450482\"}",
+    "x-tap": "wx",
+    "x-ticid": "ARF-8TDuE8Hp-BvQA-2Kt6CXRWVIVYXQP17Rkkd3yLqT43On0ljjKb9CYZSD9R0o39xFvMytwZBFkkuljESZ-Bc6X4xb",
+    Referer: "https://servicewechat.com/wxece3a9a4c82f58c9/496/page-frame.html",
+    Cookie: _0x2aab6b,
+    "content-type": "application/x-www-form-urlencoded"
+  };
+  const _0x3c33ad = new Date().getTime();
+  const _0xae88f4 = {
+    url: "https://guide-acs.m.taobao.com/h5/mtop.alsc.wechat.biz.api.community.bind.invite/1.0/4.0/?jsv=2.4.12&appKey=32529321&t=\"" + _0x3c33ad + "\"&sign=19bcc772739e471dd8bae51cf7abb34c&c=65132fab890611a36ea4c56426be6bc5_1685709597766%3Bde94d00b67ff8d2082f9efeeaf38cfd4&api=mtop.alsc.wechat.biz.api.checkin&dataType=json&method=GET&timeout=10000&v=1.0&type=originaljson&ttid=wxece3a9a4c82f58c9%40wechat_ios_10.20.1&accountSite=eleme&data={\"inviteCode\":\"" + _0x213e4b + "\",\"firstCheckIn\":false}&_bx-m=1",
+    method: "GET",
+    headers: _0x33ea3a
+  };
+  return tryCatchPromise(_0x3ec5f7 => {
+    request(_0xae88f4, async (_0x3050e0, _0x12599e, _0x332d71) => {
+      if (!_0x3050e0 && _0x12599e.statusCode === 200) {
+        try {
+          const _0x5253cb = JSON.parse(_0x332d71);
+          if (!isEmpty(_0x5253cb.data)) {
+            console.log(_0x5253cb.data.desc + "获得：" + _0x5253cb.data.awardAmount + " 福利金");
+            _0x3ec5f7(_0x5253cb.data);
+          } else {
+            console.log(_0x5253cb.ret[0]);
+            _0x3ec5f7(null);
+          }
+        } catch (_0x5d885b) {
+          console.log(_0x332d71);
+          _0x3ec5f7(null);
+        }
+      } else {
+        _0x3ec5f7(null);
+      }
+    });
+  });
+}
+async function checkIn(_0x354268, _0x14825f) {
+  const _0x383e10 = _0x14825f.communityInfo;
+  if (_0x383e10.communityName) {
+    console.log("绑定的社群为：" + _0x383e10.communityName);
+    const _0x4826d2 = process.env.inviteCode;
+    if (_0x14825f.userInfo && _0x4826d2 !== _0x14825f.userInfo.inviteCode && !_0x14825f.userInfo.inviteUserInfoDTO && _0x4826d2) {
+      await bindInvited(_0x354268, _0x4826d2);
+    }
+    const _0x569d24 = _0x383e10.sceneCode;
+    const _0x26a899 = await signin(_0x354268, _0x569d24);
+    if (_0x26a899) {
+      console.log(_0x26a899.desc);
+    }
+  } else {
+    console.log("你还没有加入社群，快找社群加入吧！");
+  }
 }
 async function start() {
   await validateCarmeWithType(kami, 1);
-  const _0x515ef3 = getCookies();
-  for (let _0x2baa24 = 0; _0x2baa24 < _0x515ef3.length; _0x2baa24++) {
-    let _0x35466 = _0x515ef3[_0x2baa24];
-    _0x35466 = await checkCk(_0x35466, _0x2baa24);
-    if (!_0x35466) {
-      process.exit(0);
-      continue;
-    }
-    let _0x1eef6f = await getUserInfo(_0x35466);
-    if (!_0x1eef6f.username) {
-      console.log("第", _0x2baa24 + 1, "账号失效！请重新登录！！！😭");
-      process.exit(0);
-    }
-    const _0x23fd3a = _0x1eef6f.user_id;
-    console.log("****** #" + (_0x2baa24 + 1), _0x1eef6f.mobile, "*********");
-    console.log("账号的 id 为", _0x23fd3a);
-    console.log("当前抢券线程数为", threadCount);
-    let _0x2d03c0 = await queryintegralproperty(_0x35466);
-    if (_0x2d03c0 !== -1 && _0x2d03c0 < 13999) {
-      console.log("金币不够兑换 20 元券，程序结束");
-      process.exit(0);
-    }
-    await checkCarmeCount(kami, _0x23fd3a, GAME_TYEP);
-    let _0x5be59f = await syncTime();
-    if (!_0x5be59f) {
-      _0x5be59f = new Date().getTime() / 1000;
-    }
-    let _0x946ffd = getNextDayZeroTimestamp(_0x5be59f * 1000);
-    let _0x4b0dcc = _0x946ffd - _0x5be59f * 1000 - 2000;
-    console.log("程序将在", _0x4b0dcc / 1000, "秒后开始抢券");
-    setTimeout(async () => {
-      runAfterTenSeconds(_0x35466);
-      while (true) {
-        await queryLotteryChance(_0x35466);
+  const _0x534aaa = getCookies();
+  for (let _0x5a6ca4 = 0; _0x5a6ca4 < _0x534aaa.length; _0x5a6ca4++) {
+    const _0x5c0779 = _0x534aaa[_0x5a6ca4];
+    if (!_0x5c0779) {
+      console.log(" ❌无效用户信息, 请重新获取ck");
+    } else {
+      try {
+        let _0x1edfd3 = await checkCk(_0x5c0779, _0x5a6ca4, kami);
+        if (!_0x1edfd3) {
+          continue;
+        }
+        let _0x19d49b = await getUserInfo(_0x1edfd3);
+        if (!_0x19d49b.username) {
+          console.log("第", _0x5a6ca4 + 1, "账号失效！请重新登录！！！😭");
+          continue;
+        }
+        const _0x49b87d = _0x19d49b.user_id;
+        await checkCarmeCount(kami, _0x49b87d, GAME_TYEP);
+        console.log("******开始【饿了么账号", _0x5a6ca4 + 1, "】", _0x19d49b.username, "*********");
+        const _0x1ff755 = await getInfo(_0x1edfd3, "6479bc935af0ee3eb2a5b3887a1868bb_1692263416235;08b5bac886619782a657c9f274c43c7e");
+        if (_0x1ff755.communityInfo) {
+          await checkIn(_0x1edfd3, _0x1ff755);
+        } else {
+          console.log("获取用户信息：" + JSON.stringify(_0x1ff755));
+        }
+        if (_0x5a6ca4 < _0x534aaa.length - 1) {
+          console.log("延时", wait_time, "秒继续下一个");
+          await wait(wait_time);
+        }
+      } catch (_0x40b4e6) {
+        console.log(_0x40b4e6);
       }
-    }, _0x4b0dcc);
-  }
-}
-function runAfterTenSeconds(_0xdc19fe) {
-  setTimeout(async () => {
-    let _0x5ebaed = await queryCoupon(_0xdc19fe, "64c767d7e6851eebe3c8cd476b0bc622_1692237574823;6f86648948993abca30366d96015297a");
-    if (_0x5ebaed) {
-      await queryCoupon(_0xdc19fe, _0x5ebaed);
     }
-    process.exit(0);
-  }, 10000);
+  }
+  process.exit(0);
 }
 start();
 function Env(t, e) {
